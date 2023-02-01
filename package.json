@@ -1,0 +1,24 @@
+{
+  "name": "mysql-employee-tracker",
+  "version": "1.0.0",
+  "description": "An employee tracking command-line application built with Node.js, Inquirer, and MySQL.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VisualViolet/mysql-employee-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VisualViolet/mysql-employee-tracker/issues"
+  },
+  "homepage": "https://github.com/VisualViolet/mysql-employee-tracker#readme",
+  "dependencies": {
+    "inquirer": "^9.1.4",
+    "mysql2": "^3.1.0"
+  }
+}
