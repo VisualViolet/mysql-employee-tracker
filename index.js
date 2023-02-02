@@ -84,4 +84,25 @@ function viewEmployees() {
     })
 }
 
+
+function addDepartment() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What department would you like to add?",
+            name: "department"
+        }
+    ])
+    .then((answer) => {
+        db.query('INSERT INTO department (name) VALUES (?)', [answer.department], (err, results) => {
+            if (err) 
+            {
+                throw err;
+            }
+            console.log(`Added ${answer.department} to departments!`)
+        })
+    })
+}
+
+
 startPrompt();
