@@ -19,7 +19,7 @@ MySQL Employee Tracker is a command-line application built with Node.js, Inquire
 
 ## Installation
 
-Since this is a command-line application, there will be no live deployment. Please view a live demonstration of this app here: https://drive.google.com/file/d/1-3SRhv32EkyPbBooeG6-uJu9TdaYoXkd/view.
+Since this is a command-line application, there will be no live deployment. Please view a live demonstration of this app here: https://drive.google.com/file/d/1qKs9G59D-PP3hHJE3h6esWmJtCy522pD/view.
 
 
 ## Usage
