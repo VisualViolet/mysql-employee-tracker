@@ -73,23 +73,29 @@ function viewDepartments() {
 }
 
 function viewRoles() {
-  db.query("SELECT * FROM role", (err, results) => {
-    if (err) {
-      throw err;
+  db.query(
+    "SELECT r.title AS jobTitle, r.id, d.name AS department, r.salary FROM role r INNER JOIN department d ON r.department_id = d.id;",
+    (err, results) => {
+      if (err) {
+        throw err;
+      }
+      console.table(results);
+      startPrompt();
     }
-    console.table(results);
-    startPrompt();
-  });
+  );
 }
 
 function viewEmployees() {
-  db.query("SELECT * FROM employee", (err, results) => {
-    if (err) {
-      throw err;
+  db.query(
+    'SELECT e.id AS id, e.first_name, e.last_name, r.title AS jobTitle, d.name AS department, CONCAT(m.first_name, " ", m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m  ON e.manager_id = m.id;',
+    (err, results) => {
+      if (err) {
+        throw err;
+      }
+      console.table(results);
+      startPrompt();
     }
-    console.table(results);
-    startPrompt();
-  });
+  );
 }
 
 function addDepartment() {
@@ -158,103 +164,112 @@ function addRole() {
 }
 
 function addEmployee() {
-  db.query('SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE', (err, empResults) => {
-    if (err) throw err;
-
-    db.query("SELECT id AS value, title AS name FROM role", (err, roleResults) => {
+  db.query(
+    'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE',
+    (err, empResults) => {
       if (err) throw err;
 
-      inquirer
-        .prompt([
-          {
-            type: "input",
-            message: "What is this employees first name?",
-            name: "firstName",
-          },
-          {
-            type: "input",
-            message: "What is this employees last name?",
-            name: "lastName",
-          },
-          {
-            type: "list",
-            message: "What role does this employee have?",
-            choices: roleResults,
-            name: "role",
-          },
-          {
-            type: "list",
-            message: "Who manages this employee? (Can leave blank)",
-            choices: empResults,
-            name: "manager",
-          },
-        ])
-        .then((answers) => {
-          db.query(
-            "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
-            [
-              answers.firstName,
-              answers.lastName,
-              answers.role,
-              answers.manager,
-            ],
-            (err, results) => {
-              if (err) {
-                throw err;
-              }
-              console.log(
-                `Added ${answers.firstName} ${answers.lastName} to employees!`
+      db.query(
+        "SELECT id AS value, title AS name FROM role",
+        (err, roleResults) => {
+          if (err) throw err;
+
+          inquirer
+            .prompt([
+              {
+                type: "input",
+                message: "What is this employees first name?",
+                name: "firstName",
+              },
+              {
+                type: "input",
+                message: "What is this employees last name?",
+                name: "lastName",
+              },
+              {
+                type: "list",
+                message: "What role does this employee have?",
+                choices: roleResults,
+                name: "role",
+              },
+              {
+                type: "list",
+                message: "Who manages this employee? (Can leave blank)",
+                choices: empResults,
+                name: "manager",
+              },
+            ])
+            .then((answers) => {
+              db.query(
+                "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
+                [
+                  answers.firstName,
+                  answers.lastName,
+                  answers.role,
+                  answers.manager,
+                ],
+                (err, results) => {
+                  if (err) {
+                    throw err;
+                  }
+                  console.log(
+                    `Added ${answers.firstName} ${answers.lastName} to employees!`
+                  );
+                  startPrompt();
+                }
               );
-              startPrompt();
-            }
-          );
-        });
-    });
-  });
+            });
+        }
+      );
+    }
+  );
 }
 
 function updateRole() {
-    db.query('SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE', (err, empResults) => {
+  db.query(
+    'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE',
+    (err, empResults) => {
       if (err) throw err;
-  
-      db.query("SELECT id AS value, title AS name FROM role", (err, roleResults) => {
-        if (err) throw err;
-  
-        inquirer
-          .prompt([
-            {
-              type: "list",
-              message: "Which employee would you like to update?",
-              choices: empResults,
-              name: "employee",
-            },
-            {
-              type: "list",
-              message: "What's their role?",
-              choices: roleResults,
-              name: "role",
-            },
-          ])
-          .then((answers) => {
-            db.query(
-              "UPDATE employee SET role_id = ? WHERE id = ?",
-              [
-                answers.role,
-                answers.employee
-              ],
-              (err, results) => {
-                if (err) {
-                  throw err;
+
+      db.query(
+        "SELECT id AS value, title AS name FROM role",
+        (err, roleResults) => {
+          if (err) throw err;
+
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                message: "Which employee would you like to update?",
+                choices: empResults,
+                name: "employee",
+              },
+              {
+                type: "list",
+                message: "What's their role?",
+                choices: roleResults,
+                name: "role",
+              },
+            ])
+            .then((answers) => {
+              db.query(
+                "UPDATE employee SET role_id = ? WHERE id = ?",
+                [answers.role, answers.employee],
+                (err, results) => {
+                  if (err) {
+                    throw err;
+                  }
+                  console.log(
+                    `Updated employee role!`
+                  );
+                  startPrompt();
                 }
-                console.log(
-                  `Updated ${answers.employee}'s role to ${answers.role}`
-                );
-                startPrompt();
-              }
-            );
-          });
-      });
-    });
-  }
+              );
+            });
+        }
+      );
+    }
+  );
+}
 
 startPrompt();
