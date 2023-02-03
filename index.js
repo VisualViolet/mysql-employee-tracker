@@ -208,7 +208,7 @@ function addEmployee() {
               },
               {
                 type: "list",
-                message: "Who manages this employee? (Can leave blank)",
+                message: "Who manages this employee?",
                 choices: empResults,
                 name: "manager",
               },
