@@ -1,10 +1,10 @@
 -- Remove database if it already exists
 DROP DATABASE IF EXISTS employees_db;
-
+-- Create database
 CREATE DATABASE employees_db;
-
+-- Specify database to use for the following queries
 USE employees_db;
-
+-- Create tables
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(30)

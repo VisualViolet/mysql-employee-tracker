@@ -1,5 +1,6 @@
 // Secure using dotenv
 require("dotenv").config();
+
 // Required Packages
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
@@ -64,16 +65,19 @@ const startPrompt = () => {
     });
 };
 
+// Function to view all departments.
 function viewDepartments() {
   db.query("SELECT * FROM department", (err, results) => {
     if (err) {
       throw err;
     }
+    // Console.table returns a formatted table result
     console.table(results);
     startPrompt();
   });
 }
 
+// Function to view all roles. Query includes a join to show department name instead of id.
 function viewRoles() {
   db.query(
     "SELECT r.title AS jobTitle, r.id, d.name AS department, r.salary FROM role r INNER JOIN department d ON r.department_id = d.id;",
@@ -87,6 +91,7 @@ function viewRoles() {
   );
 }
 
+// Function to view employees. Query includes two joins to show names for department and manager.
 function viewEmployees() {
   db.query(
     'SELECT e.id AS id, e.first_name, e.last_name, r.title AS jobTitle, d.name AS department, CONCAT(m.first_name, " ", m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m  ON e.manager_id = m.id;',
@@ -100,6 +105,7 @@ function viewEmployees() {
   );
 }
 
+// Function to add a department
 function addDepartment() {
   inquirer
     .prompt([
@@ -124,7 +130,9 @@ function addDepartment() {
     });
 }
 
+// Function to add a role. Queries were run before hand to create arrays for the inquirer choices so available options are always up to date
 function addRole() {
+    //querying this way will return an index value instead of a name from answers.department for easy insert into our SQL table
   db.query("SELECT id AS value, name FROM department", (err, results) => {
     if (err) {
       throw err;
@@ -145,6 +153,7 @@ function addRole() {
         {
           type: "list",
           message: "What department does this role belong to?",
+          // passing in results from above query (note: returns an object with value (key) and name (data))
           choices: results,
           name: "department",
         },
@@ -165,8 +174,10 @@ function addRole() {
   });
 }
 
+// Function to add an employee. Queries were run before hand to create arrays for the inquirer choices so available options are always up to date
 function addEmployee() {
   db.query(
+    // query uses a concat to return first and last name as a singular string
     'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE',
     (err, empResults) => {
       if (err) throw err;
@@ -227,6 +238,7 @@ function addEmployee() {
   );
 }
 
+// Function to update role. Very similar syntax to the previous function except we're running an update query in our .then promise
 function updateRole() {
   db.query(
     'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE',
@@ -274,4 +286,5 @@ function updateRole() {
   );
 }
 
+// Initialize app
 startPrompt();
