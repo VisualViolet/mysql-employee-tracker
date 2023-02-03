@@ -218,4 +218,48 @@ function addEmployee() {
   });
 }
 
+function updateRole() {
+    db.query('SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE', (err, empResults) => {
+      if (err) throw err;
+  
+      db.query("SELECT id AS value, title AS name FROM role", (err, roleResults) => {
+        if (err) throw err;
+  
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              message: "Which employee would you like to update?",
+              choices: empResults,
+              name: "employee",
+            },
+            {
+              type: "list",
+              message: "What's their role?",
+              choices: roleResults,
+              name: "role",
+            },
+          ])
+          .then((answers) => {
+            db.query(
+              "UPDATE employee SET role_id = ? WHERE id = ?",
+              [
+                answers.role,
+                answers.employee
+              ],
+              (err, results) => {
+                if (err) {
+                  throw err;
+                }
+                console.log(
+                  `Updated ${answers.employee}'s role to ${answers.role}!`
+                );
+                startPrompt();
+              }
+            );
+          });
+      });
+    });
+  }
+
 startPrompt();
