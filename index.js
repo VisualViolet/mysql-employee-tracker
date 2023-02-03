@@ -4,6 +4,7 @@ require("dotenv").config();
 // Required Packages
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
+const consoleTable = require("console.table");
 
 // Create connection to database
 const db = mysql.createConnection(
@@ -94,7 +95,7 @@ function viewRoles() {
 // Function to view employees. Query includes two joins to show names for department and manager.
 function viewEmployees() {
   db.query(
-    'SELECT e.id AS id, e.first_name, e.last_name, r.title AS jobTitle, d.name AS department, CONCAT(m.first_name, " ", m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m  ON e.manager_id = m.id;',
+    'SELECT e.id AS id, e.first_name AS first_name, e.last_name AS last_name, r.title AS jobTitle, d.name AS department, CONCAT(m.first_name, " ", m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m  ON e.manager_id = m.id;',
     (err, results) => {
       if (err) {
         throw err;
