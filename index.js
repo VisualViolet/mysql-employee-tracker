@@ -4,6 +4,7 @@ require("dotenv").config();
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 
+// Create connection to database
 const db = mysql.createConnection(
   {
     host: "localhost",
@@ -14,6 +15,7 @@ const db = mysql.createConnection(
   console.log(`Connected to the Employees database!`)
 );
 
+// Function to prompt menu options
 const startPrompt = () => {
   inquirer
     .prompt([
