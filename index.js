@@ -1,3 +1,5 @@
+// Secure using dotenv
+require("dotenv").config();
 // Required Packages
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
@@ -5,9 +7,9 @@ const mysql = require("mysql2");
 const db = mysql.createConnection(
   {
     host: "localhost",
-    user: "root",
-    password: "password",
-    database: "employees_db",
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
   },
   console.log(`Connected to the Employees database!`)
 );
@@ -115,7 +117,7 @@ function addDepartment() {
 }
 
 function addRole() {
-  db.query("SELECT * FROM department", (err, results) => {
+  db.query("SELECT id AS value, name FROM department", (err, results) => {
     if (err) {
       throw err;
     }
@@ -140,16 +142,9 @@ function addRole() {
         },
       ])
       .then((answers) => {
-        let departmentID;
-        results.forEach((department) => {
-          if (department.name === answers.department) {
-            departmentID = department.id;
-          }
-          console.log(departmentID);
-        });
         db.query(
           "INSERT INTO role (title, salary, department_id) VALUES (?,?,?)",
-          [answers.role, answers.salary, departmentID],
+          [answers.role, answers.salary, answers.department],
           (err, results) => {
             if (err) {
               throw err;
@@ -252,7 +247,7 @@ function updateRole() {
                   throw err;
                 }
                 console.log(
-                  `Updated ${answers.employee}'s role to ${answers.role}!`
+                  `Updated ${answers.employee}'s role to ${answers.role}`
                 );
                 startPrompt();
               }
