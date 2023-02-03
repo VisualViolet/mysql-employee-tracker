@@ -162,4 +162,60 @@ function addRole() {
   });
 }
 
+function addEmployee() {
+  db.query('SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM EMPLOYEE', (err, empResults) => {
+    if (err) throw err;
+
+    db.query("SELECT id AS value, title AS name FROM role", (err, roleResults) => {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            message: "What is this employees first name?",
+            name: "firstName",
+          },
+          {
+            type: "input",
+            message: "What is this employees last name?",
+            name: "lastName",
+          },
+          {
+            type: "list",
+            message: "What role does this employee have?",
+            choices: roleResults,
+            name: "role",
+          },
+          {
+            type: "list",
+            message: "Who manages this employee? (Can leave blank)",
+            choices: empResults,
+            name: "manager",
+          },
+        ])
+        .then((answers) => {
+          db.query(
+            "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
+            [
+              answers.firstName,
+              answers.lastName,
+              answers.role,
+              answers.manager,
+            ],
+            (err, results) => {
+              if (err) {
+                throw err;
+              }
+              console.log(
+                `Added ${answers.firstName} ${answers.lastName} to employees!`
+              );
+              startPrompt();
+            }
+          );
+        });
+    });
+  });
+}
+
 startPrompt();
